@@ -86,13 +86,21 @@ def extract_area_code_or_mobile_prefix(input_number):
   # the used regex only searches for area code (parenthesis) or mobile prefix
   # (first 4 digits, whitespace and trailing numbers) because
   # the telemarketer numbers are already excluded by this two criteria
-  found_match = re.match(r"(?P<area_code>\(0[0-9]+\))|(?P<mobile_prefix>[7,8,9][0-9]{3})[0-9]*\s[0-9]+", input_number)
+  found_match = re.match(
+    r"(?P<area_code>\(0[0-9]+\))|(?P<mobile_prefix>[7,8,9][0-9]{3})(?P<rest_pre_whitespace>[0-9]*)\s(?P<post_whitespace>[0-9]+)",
+    input_number)
   if found_match:
     group_dict = found_match.groupdict()
     if group_dict.get("area_code", None):
       return group_dict["area_code"]
     elif group_dict.get("mobile_prefix", None):
-      return group_dict["mobile_prefix"].rstrip()
+      # test if whitespace is in the "middle"
+      pre_whitespace_length = len(group_dict.get("rest_pre_whitespace", 0)) + len(group_dict.get("mobile_prefix"))
+      post_whitespace_length = len(group_dict.get("post_whitespace", 0))
+      if pre_whitespace_length == post_whitespace_length:
+        return group_dict["mobile_prefix"].rstrip()
+      else:
+        return None
   else:
     return None
 
