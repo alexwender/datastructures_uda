@@ -25,10 +25,15 @@ Print a message:
 The list of numbers should be print out one per line in lexicographic order with no duplicates.
 """
 
+# set of all numbers which do not fit the criteria for telemarketers
 non_telemarketers_set = set()
+
+# updating the set with a list of all call receiving numbers
 non_telemarketers_set.update(
     [number[1] for number in calls]
 )
+
+# updating the set with all text sending and receiving numbers
 for text_info in texts:
     non_telemarketers_set.update(
         [
@@ -37,6 +42,7 @@ for text_info in texts:
         ]
     )
 
+# checking for all calling numbers if they are in the non_telemarketers_set
 telemarketer_candidates = set()
 for number_info in calls:
     if number_info[0] not in non_telemarketers_set:
